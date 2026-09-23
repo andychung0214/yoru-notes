@@ -16,7 +16,7 @@
   const validatedLibrary = {};
   for (const song of songs) {
     if (library[song.id]) {
-      try { validatedLibrary[song.id] = {rows:core.parseLyrics(JSON.stringify(library[song.id].rows)), demo:library[song.id].demo === true}; } catch { readFailed(); }
+      try { validatedLibrary[song.id] = {rows:core.validateLyricsRows(library[song.id].rows), demo:library[song.id].demo === true}; } catch { readFailed(); }
     }
   }
   library = validatedLibrary;
@@ -92,11 +92,12 @@
       const line = el('div', 'lyric-row');
       line.append(el('span', 'line-number', String(index + 1).padStart(2, '0')));
       const copy = el('div');
-      const visibleLanguages = language === 'all' ? ['ja', 'zh', 'en'] : language === 'both' ? ['ja', 'zh'] : [language];
-      const labels = {ja:'日文', zh:'中文', en:'英文'};
+      const visibleLanguages = language === 'complete' ? ['ja', 'kanji', 'hiragana', 'katakana', 'zh', 'en'] : language === 'all' ? ['ja', 'zh', 'en'] : language === 'both' ? ['ja', 'zh'] : [language];
+      const labels = {ja:'日文', zh:'中文', en:'英文', hiragana:'平假名', katakana:'片假名', kanji:'漢字'};
+      const languageTags = {ja:'ja', zh:'zh-Hant', en:'en', hiragana:'ja', katakana:'ja', kanji:'ja'};
       for (const key of visibleLanguages) {
         const text = el('p', `lyric-${key}`, row[key] || `（此行未提供${labels[key]}）`);
-        text.lang = row[key] ? (key === 'zh' ? 'zh-Hant' : key) : 'zh-Hant';
+        text.lang = row[key] ? languageTags[key] : 'zh-Hant';
         copy.append(text);
       }
       line.append(copy);
@@ -178,7 +179,7 @@
   $('#load-example').addEventListener('click', () => {
     fileReadVersion++;
     $('#import-form button[type=submit]').disabled = false;
-    demoText = JSON.stringify([{ja:'これは表示を確かめるための例文です。',zh:'這是用來確認顯示效果的範例句子。',en:'This is a sample sentence to check the display.'},{ja:'ここに自分のテキストを入れます。',zh:'在這裡放入自己的文字。',en:'Place your own text here.'}], null, 2);
+    demoText = JSON.stringify([{kanji:'これは表示を確かめるための例文です。',ja:'これは表示を確かめるための例文です。',zh:'這是用來確認顯示效果的範例句子。',en:'This is a sample sentence to check the display.',hiragana:'これはひょうじをたしかめるためのれいぶんです。',katakana:'コレハヒョウジヲタシカメルタメノレイブンデス。'},{kanji:'ここに自分のテキストを入れます。',ja:'ここに自分のテキストを入れます。',zh:'在這裡放入自己的文字。',en:'Place your own text here.',hiragana:'ここにじぶんのてきすとをいれます。',katakana:'ココニジブンノテキストヲイレマス。'}], null, 2);
     $('#lyrics-input').value = demoText;
     $('#import-error').textContent = '';
   });
@@ -204,7 +205,7 @@
       const persisted = save('yoru.lyrics', library);
       dialog.close();
       renderLyrics();
-      if (persisted) notify('已儲存個人內容，可以切換日文、中文、英文或對照閱讀。');
+      if (persisted) notify('已儲存個人內容，可以切換語言、假名讀音或全部對照。');
     } catch (error) { $('#import-error').textContent = error.message; }
   });
   $('#delete-lyrics').addEventListener('click', () => {

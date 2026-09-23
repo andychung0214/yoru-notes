@@ -12,16 +12,19 @@
       if (new TextEncoder().encode(text).length > 200000) throw Error('檔案上限為 200 KB。');
       let rows;
       try { rows = JSON.parse(text); } catch { throw Error('無法解析 JSON，請檢查括號與引號。'); }
+      return api.validateLyricsRows(rows);
+    },
+    validateLyricsRows(rows) {
       if (!Array.isArray(rows) || !rows.length || rows.length > 500) throw Error('請提供包含 1 至 500 行的陣列。');
       return rows.map((row, index) => {
         if (!row || typeof row !== 'object' || Array.isArray(row)) throw Error(`第 ${index + 1} 行格式錯誤。`);
         const line = {};
-        for (const key of ['ja', 'zh', 'en']) {
+        for (const key of ['ja', 'zh', 'en', 'hiragana', 'katakana', 'kanji']) {
           if (row[key] !== undefined && typeof row[key] !== 'string') throw Error(`第 ${index + 1} 行的 ${key} 必須是文字。`);
           line[key] = (row[key] || '').trim();
           if (line[key].length > 1000) throw Error(`第 ${index + 1} 行文字過長。`);
         }
-        if (!line.ja && !line.zh && !line.en) throw Error(`第 ${index + 1} 行至少需要一種語言。`);
+        if (!Object.values(line).some(Boolean)) throw Error(`第 ${index + 1} 行至少需要一個文字或讀音欄位。`);
         return line;
       });
     },

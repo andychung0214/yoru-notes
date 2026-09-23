@@ -15,3 +15,7 @@
 .language-picker{flex-wrap:wrap;max-width:100%}
 .language-picker button{white-space:nowrap}
 .lyric-en{font-size:15px;line-height:1.9;color:var(--ink)}
+
+.lyric-hiragana,.lyric-katakana{font-size:15px;line-height:1.9;color:var(--muted)}
+
+.lyric-kanji{font-size:18px;line-height:1.9}
