@@ -28,7 +28,20 @@ const server = http.createServer((req, res) => {
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
     await page.goto(url);
-    check('初始顯示八首歌曲', await page.locator('.song-item').count() === 8);
+    check('初始顯示十六首歌曲', await page.locator('.song-item').count() === 16);
+    for (const song of require('../data.js').slice(8)) {
+      await page.locator(`.song-item[href="#song/${song.id}"]`).click();
+      await page.waitForFunction(title => document.querySelector('#song-title').textContent === title, song.title);
+      check(`新增曲目 ${song.title} 可開啟且原作與 MV 正確`, await page.locator('#story-title').textContent() === song.story && await page.locator('#listen').getAttribute('href') === song.listen);
+      await page.locator('[data-panel=lyrics]').click();
+      assert.ok(await page.locator('.lyrics-empty').isVisible());
+      await page.locator('[data-panel=story]').click();
+    }
+    await page.locator('#favorite').click();
+    await page.reload();
+    check('新增曲目收藏可保留', await page.locator('#favorite').getAttribute('aria-pressed') === 'true');
+    await page.locator('#favorite').click();
+    await page.goto(url);
     await page.screenshot({path:path.join(root,'test-results','desktop.png'),fullPage:true});
     await page.locator('#search').fill('芙莉蓮');
     check('中文原作搜尋', await page.locator('.song-item').count() === 1);
@@ -92,6 +105,12 @@ const server = http.createServer((req, res) => {
       check(`${width}px 無水平溢出`, await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
     }
     await page.setViewportSize({width:390,height:844});
+    await page.locator('.song-item[href="#song/sangenshoku"]').click();
+    await page.waitForFunction(() => document.querySelector('#song-title').textContent === '三原色');
+    check('手機可滑動至第十六首並開啟', await page.locator('#story-title').textContent() === 'RGB');
+    await page.locator('.song-item[href="#song/anoyume"]').click();
+    await page.waitForFunction(() => document.querySelector('#song-title').textContent === 'あの夢をなぞって');
+    check('手機新增長曲名無水平溢出', await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
     await page.screenshot({path:path.join(root,'test-results','mobile.png'),fullPage:true});
     await page.locator('[data-panel=lyrics]').click();
     await page.locator('#open-import').click();
@@ -115,7 +134,7 @@ const server = http.createServer((req, res) => {
     await corrupt.close();
     const local = await browser.newPage();
     await local.goto(pathToFileURL(path.join(root,'index.html')).href);
-    check('直接 file:// 開啟可用', await local.locator('.song-item').count() === 8);
+    check('直接 file:// 開啟可用', await local.locator('.song-item').count() === 16);
     console.log(`\n${checks.length} browser checks passed.`);
     fs.writeFileSync(path.join(root,'test-results','browser-report.json'),JSON.stringify({date:new Date().toISOString(),checks,errors},null,2));
   } finally { await browser.close(); server.close(); }

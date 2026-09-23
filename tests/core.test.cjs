@@ -4,8 +4,8 @@ const core = require('../core.js');
 const songs = require('../data.js');
 
 test('曲目 id 唯一，每首皆有可追溯 HTTPS 來源', () => {
-  assert.equal(songs.length, 8);
-  assert.equal(new Set(songs.map(s => s.id)).size, 8);
+  assert.equal(songs.length, 16);
+  assert.equal(new Set(songs.map(s => s.id)).size, 16);
   songs.forEach(s => assert.match(s.source, /^https:\/\//));
 });
 test('搜尋支援中文、日文、原作及空白與大小寫', () => {
@@ -15,9 +15,20 @@ test('搜尋支援中文、日文、原作及空白與大小寫', () => {
   assert.equal(core.filterSongs(songs, '不存在', 'all', []).length, 0);
 });
 test('分類與收藏組合篩選', () => {
-  assert.equal(core.filterSongs(songs, '', 'anime', []).length, 3);
+  assert.equal(core.filterSongs(songs, '', 'novel', []).length, 11);
+  assert.equal(core.filterSongs(songs, '', 'anime', []).length, 5);
   assert.equal(core.filterSongs(songs, '', 'favorites', ['idol']).length, 1);
   assert.equal(core.filterSongs(songs, '', 'favorites', []).length, 0);
+});
+test('八首新增曲目可依中文與原作搜尋，資料欄位齊全', () => {
+  for (const id of ['anoyume','halzion','tabun','haruka','encore','kaibutsu','suisei','sangenshoku']) {
+    const song = songs.find(item => item.id === id);
+    assert.ok(song, id);
+    for (const field of ['title','zh','roman','year','story','author','tie','note','summary','sourceLabel','motif']) assert.ok(song[field]?.trim(), `${id}.${field}`);
+    assert.ok(core.filterSongs(songs, song.zh, 'all', []).some(item => item.id === id));
+    assert.ok(core.filterSongs(songs, song.story, song.category, []).some(item => item.id === id));
+    assert.match(song.listen, /^https:\/\/www.youtube.com\/watch\?v=[\w-]{11}$/);
+  }
 });
 test('合法雙語與單語匯入，HTML 保留為純文字', () => {
   assert.deepEqual(core.parseLyrics('[{"ja":" <b>夜</b> ","zh":"夜晚"}]'), [{ja:'<b>夜</b>',zh:'夜晚'}]);
