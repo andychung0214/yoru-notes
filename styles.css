@@ -10,3 +10,8 @@
 .theme-picker button[aria-pressed=true]:after{inset:8px}
 .artist-link{min-height:44px}
 @media(max-width:900px){.artist-link{top:19px}}
+
+/* 多語閱讀選項在窄螢幕自然換行。 */
+.language-picker{flex-wrap:wrap;max-width:100%}
+.language-picker button{white-space:nowrap}
+.lyric-en{font-size:15px;line-height:1.9;color:var(--ink)}

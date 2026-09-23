@@ -16,12 +16,12 @@
       return rows.map((row, index) => {
         if (!row || typeof row !== 'object' || Array.isArray(row)) throw Error(`第 ${index + 1} 行格式錯誤。`);
         const line = {};
-        for (const key of ['ja', 'zh']) {
+        for (const key of ['ja', 'zh', 'en']) {
           if (row[key] !== undefined && typeof row[key] !== 'string') throw Error(`第 ${index + 1} 行的 ${key} 必須是文字。`);
           line[key] = (row[key] || '').trim();
           if (line[key].length > 1000) throw Error(`第 ${index + 1} 行文字過長。`);
         }
-        if (!line.ja && !line.zh) throw Error(`第 ${index + 1} 行至少需要一種語言。`);
+        if (!line.ja && !line.zh && !line.en) throw Error(`第 ${index + 1} 行至少需要一種語言。`);
         return line;
       });
     },

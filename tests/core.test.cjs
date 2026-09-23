@@ -31,8 +31,13 @@ test('八首新增曲目可依中文與原作搜尋，資料欄位齊全', () =>
   }
 });
 test('合法雙語與單語匯入，HTML 保留為純文字', () => {
-  assert.deepEqual(core.parseLyrics('[{"ja":" <b>夜</b> ","zh":"夜晚"}]'), [{ja:'<b>夜</b>',zh:'夜晚'}]);
-  assert.deepEqual(core.parseLyrics('[{"ja":"日文"}]'), [{ja:'日文',zh:''}]);
+  assert.deepEqual(core.parseLyrics('[{"ja":" <b>夜</b> ","zh":"夜晚"}]'), [{ja:'<b>夜</b>',zh:'夜晚',en:''}]);
+  assert.deepEqual(core.parseLyrics('[{"ja":"日文"}]'), [{ja:'日文',zh:'',en:''}]);
+});
+test('英文單語與三語匯入，英文套用相同限制', () => {
+  assert.deepEqual(core.parseLyrics('[{"en":" Example "}]'), [{ja:'',zh:'',en:'Example'}]);
+  assert.deepEqual(core.parseLyrics('[{"ja":"例","zh":"範例","en":"Example"}]'), [{ja:'例',zh:'範例',en:'Example'}]);
+  for (const en of [null, 12, {}, ' ', 'x'.repeat(1001)]) assert.throws(() => core.parseLyrics(JSON.stringify([{en}])));
 });
 test('拒絕不合法、空白、超長與錯誤型別', () => {
   for (const input of ['bad', '{}', '[]', '[null]', '[{"ja":1}]', '[{"ja":" "}]', JSON.stringify([{zh:'x'.repeat(1001)}]), JSON.stringify(Array(501).fill({ja:'a'}))]) {

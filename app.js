@@ -81,7 +81,7 @@
     $('#lyrics-controls').hidden = !entry;
     if (!entry) {
       const empty = el('div', 'lyrics-empty');
-      empty.append(el('div', 'empty-symbol', '文 / あ'), el('h3', '', '為這首歌，放入你的閱讀版本。'), el('p', '', '本站未收錄受版權保護的完整歌詞與翻譯。你可以匯入有權使用的日中對照內容，或前往官方 MV 查看其說明與字幕（若有提供）。'));
+      empty.append(el('div', 'empty-symbol', '文 / あ'), el('h3', '', '為這首歌，放入你的閱讀版本。'), el('p', '', '本站未收錄受版權保護的完整歌詞與翻譯。你可以匯入有權使用的日中英對照內容，或前往官方 MV 查看其說明與字幕（若有提供）。'));
       const button = el('button', 'button dark-button', '匯入我的歌詞');
       button.addEventListener('click', openImport);
       empty.append(button);
@@ -92,10 +92,11 @@
       const line = el('div', 'lyric-row');
       line.append(el('span', 'line-number', String(index + 1).padStart(2, '0')));
       const copy = el('div');
-      for (const key of ['ja', 'zh']) {
-        if (language !== 'both' && key !== language) continue;
-        const text = el('p', `lyric-${key}`, row[key] || (key === 'ja' ? '（此行未提供日文）' : '（此行未提供中文）'));
-        text.lang = key === 'ja' ? 'ja' : 'zh-Hant';
+      const visibleLanguages = language === 'all' ? ['ja', 'zh', 'en'] : language === 'both' ? ['ja', 'zh'] : [language];
+      const labels = {ja:'日文', zh:'中文', en:'英文'};
+      for (const key of visibleLanguages) {
+        const text = el('p', `lyric-${key}`, row[key] || `（此行未提供${labels[key]}）`);
+        text.lang = row[key] ? (key === 'zh' ? 'zh-Hant' : key) : 'zh-Hant';
         copy.append(text);
       }
       line.append(copy);
@@ -177,7 +178,7 @@
   $('#load-example').addEventListener('click', () => {
     fileReadVersion++;
     $('#import-form button[type=submit]').disabled = false;
-    demoText = JSON.stringify([{ja:'これは表示を確かめるための例文です。',zh:'這是用來確認顯示效果的範例句子。'},{ja:'ここに自分のテキストを入れます。',zh:'在這裡放入自己的文字。'}], null, 2);
+    demoText = JSON.stringify([{ja:'これは表示を確かめるための例文です。',zh:'這是用來確認顯示效果的範例句子。',en:'This is a sample sentence to check the display.'},{ja:'ここに自分のテキストを入れます。',zh:'在這裡放入自己的文字。',en:'Place your own text here.'}], null, 2);
     $('#lyrics-input').value = demoText;
     $('#import-error').textContent = '';
   });
@@ -203,7 +204,7 @@
       const persisted = save('yoru.lyrics', library);
       dialog.close();
       renderLyrics();
-      if (persisted) notify('已儲存個人內容，可以切換日文、中文或雙語閱讀。');
+      if (persisted) notify('已儲存個人內容，可以切換日文、中文、英文或對照閱讀。');
     } catch (error) { $('#import-error').textContent = error.message; }
   });
   $('#delete-lyrics').addEventListener('click', () => {
