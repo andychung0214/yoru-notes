@@ -1,0 +1,16 @@
+(function (root) {
+  'use strict';
+  const collection = 'https://www.yoasobi-music.jp/hajimeteno/';
+  const songs = [
+    {id:'yoru',title:'夜に駆ける',zh:'向夜晚奔去',roman:'Yoru ni Kakeru',year:'2019',category:'novel',story:'タナトスの誘惑',author:'星野舞夜',tie:'短篇小說',note:'從一篇短篇小說開始，文字有了旋律，YOASOBI 的第一章也就此展開。',summary:'以星野舞夜的短篇小說為原作。可以先認識小說與歌曲的創作關係，再回到音樂，留意敘事視角如何改變聆聽的感受。',source:'https://cocotame.jp/series/019058/',sourceLabel:'Sony Music｜原作與歌曲的誕生',listen:'https://www.youtube.com/watch?v=x8VYWazR5mE',motif:'夜',color:'rose'},
+    {id:'idol',title:'アイドル',zh:'偶像',roman:'Idol',year:'2023',category:'anime',story:'45510',author:'赤坂アカ',tie:'動畫《【我推的孩子】》片頭曲',note:'聚光燈之下，是偶像與觀看她的人。',summary:'動畫《【我推的孩子】》片頭曲。赤坂アカ為歌曲撰寫小說《45510》，讓舞台之外的視角與動畫中的偶像故事彼此呼應。',source:'https://youngjump.jp/oshinoko/novel_45510/',sourceLabel:'集英社｜歌曲與原作小說',listen:'https://www.youtube.com/watch?v=ZRtdQ81jPUQ',motif:'星',color:'wine'},
+    {id:'yuusha',title:'勇者',zh:'勇者',roman:'Yuusha',year:'2023',category:'anime',story:'奏送',author:'木曾次郎／山田鐘人監修',tie:'動畫《葬送的芙莉蓮》片頭曲',note:'旅途落幕之後，才開始讀懂那些相處的時間。',summary:'歌曲連結動畫《葬送的芙莉蓮》，並以原作者山田鐘人監修的小說《奏送》為創作基礎。從音樂進入故事，重新看待旅途、記憶與時間。',source:'https://frieren-anime.jp/special/novel/',sourceLabel:'動畫官方｜原作小說《奏送》',listen:'https://www.youtube.com/watch?v=OIBODIPC_8Y',motif:'旅',color:'green'},
+    {id:'shukufuku',title:'祝福',zh:'祝福',roman:'Shukufuku',year:'2022',category:'anime',story:'ゆりかごの星',author:'大河内一楼',tie:'動畫《機動戰士鋼彈 水星的魔女》片頭曲',note:'關於選擇，也關於走向自己的未來。',summary:'《機動戰士鋼彈 水星的魔女》的片頭曲，以大河内一楼撰寫的《ゆりかごの星》為原作。官方網站公開小說，提供另一個理解角色關係的入口。',source:'https://gundam-official.com/witch-from-mercury/music/novel/',sourceLabel:'動畫官方｜原作小說',listen:'https://www.youtube.com/watch?v=3eytpBOkOFA',motif:'宙',color:'blue'},
+    {id:'mister',title:'ミスター',zh:'Mr.',roman:'Mister',year:'2022',category:'novel',story:'私だけの所有者',author:'島本理生',tie:'小說集《はじめての》',note:'在一封信裡，尋找情感與歸屬的形狀。',summary:'《はじめての》企劃第一首歌曲。原作透過機器人與擁有者的關係，書寫第一次喜歡上一個人的經驗。',source:collection,sourceLabel:'YOASOBI｜はじめての 官方企劃',listen:'https://www.youtube.com/watch?v=2-c0DFt6vK4',motif:'信',color:'ochre'},
+    {id:'sukida',title:'好きだ',zh:'喜歡你',roman:'Sukida',year:'2022',category:'novel',story:'ヒカリノタネ',author:'森絵都',tie:'小說集《はじめての》',note:'告白之前，那些想重新說一次的話。',summary:'《はじめての》企劃第二首歌曲。森絵都以告白為題，描寫一段與過去相連的單戀。',source:collection,sourceLabel:'YOASOBI｜はじめての 官方企劃',listen:'https://www.youtube.com/watch?v=WQ6ePunO8uY',motif:'光',color:'rose'},
+    {id:'umi',title:'海のまにまに',zh:'隨海的擺布',roman:'Umi no Manimani',year:'2022',category:'novel',story:'ユーレイ',author:'辻村深月',tie:'小說集《はじめての》',note:'海邊的一次相遇，讓夜晚有了不同的方向。',summary:'《はじめての》企劃第三首歌曲。原作以第一次離家出走為主題，從海邊車站與夜間的相遇展開。',source:collection,sourceLabel:'YOASOBI｜はじめての 官方企劃',listen:'https://www.youtube.com/watch?v=7G0ovtPqHnI',motif:'海',color:'blue'},
+    {id:'seventeen',title:'セブンティーン',zh:'十七歲',roman:'Seventeen',year:'2023',category:'novel',story:'色違いのトランプ',author:'宮部みゆき',tie:'小說集《はじめての》',note:'另一個世界裡，是否住著另一種可能？',summary:'《はじめての》企劃第四首歌曲。原作圍繞平行世界，以及為了救出女兒而踏上旅途的父親。',source:collection,sourceLabel:'YOASOBI｜はじめての 官方企劃',listen:'https://www.youtube.com/watch?v=0yoM7ETNPIY',motif:'鏡',color:'wine'}
+  ];
+  if (typeof module !== 'undefined' && module.exports) module.exports = songs;
+  else root.YoruSongs = songs;
+})(typeof globalThis !== 'undefined' ? globalThis : this);

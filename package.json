@@ -1,0 +1,11 @@
+{
+  "name": "yoru-notes",
+  "version": "1.0.0",
+  "private": true,
+  "description": "夜讀音樂室：YOASOBI 歌曲與故事的靜態粉絲資料館",
+  "scripts": {
+    "test": "node --test tests/core.test.cjs",
+    "test:browser": "node tests/browser.cjs"
+  },
+  "license": "MIT"
+}

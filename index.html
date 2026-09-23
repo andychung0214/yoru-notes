@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#173d35">
+  <meta name="description" content="YORU Notes 夜讀音樂室：探索 YOASOBI 歌曲、原作小說與動畫，認識 ikura，建立自己的日中對照閱讀收藏。">
+  <meta property="og:title" content="YORU Notes｜夜讀音樂室">
+  <meta property="og:description" content="一首歌，一段故事。一間獻給 YOASOBI 聽眾的夜讀音樂室。">
+  <meta property="og:type" content="website">
+  <title>YORU Notes｜夜讀音樂室 · YOASOBI Fan Archive</title>
+  <link rel="icon" href="assets/mark.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="data.js"></script>
+  <script defer src="core.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">跳至主要內容</a>
+  <aside class="sidebar" aria-label="曲目資料館">
+    <a class="brand" href="#song/yoru" aria-label="YORU Notes 首頁"><img src="assets/mark.svg" width="36" height="36" alt=""><span>YORU <i>Notes</i><small>夜 讀 音 樂 室</small></span></a>
+    <div class="sidebar-intro"><span class="eyebrow">THE LISTENING LIBRARY</span><p>把喜歡的歌，<br>再讀一遍。</p></div>
+    <label class="search"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="搜尋歌曲、故事…" aria-label="搜尋歌曲、故事"></label>
+    <div class="filters" aria-label="曲目分類">
+      <button data-filter="all" aria-pressed="true">全部</button><button data-filter="novel" aria-pressed="false">小說</button><button data-filter="anime" aria-pressed="false">動畫</button><button data-filter="favorites" aria-pressed="false">收藏</button>
+    </div>
+    <div class="list-caption"><span>精選曲目</span><span id="song-count">08 TRACKS</span></div>
+    <nav id="song-list" aria-label="歌曲列表"></nav>
+    <div id="empty-list" hidden><p>找不到符合的歌曲。</p><button id="reset-filters" class="text-button">清除搜尋與篩選 ↗</button></div>
+    <a class="artist-link" href="#ikura"><span class="artist-monogram" aria-hidden="true">i.</span><span>關於 ikura<small>故事裡的聲音</small></span><span aria-hidden="true">↗</span></a>
+    <div class="sidebar-bottom"><span class="online-dot"></span> A LITTLE ROOM FOR YOASOBI<br><small>非官方・為熱愛而整理</small></div>
+  </aside>
+  <div class="workspace">
+    <header class="topbar"><span>音樂 <span class="muted">／</span> 文學 <span class="muted">／</span> 夜裡的片刻</span><div class="theme-picker" aria-label="網站主題"><span>書房色調</span><button data-theme="forest" aria-label="森林綠主題" aria-pressed="true"></button><button data-theme="wine" aria-label="酒紅色主題" aria-pressed="false"></button></div></header>
+    <main id="main" tabindex="-1">
+      <section id="song-page">
+        <div class="hero">
+          <div class="hero-text"><p class="eyebrow gold">YOASOBI · A STORY IN EVERY SONG</p><div class="edition"><span id="hero-category">NOVEL INTO MUSIC</span><span id="hero-year">2019</span></div><h1 id="song-title" lang="ja">夜に駆ける</h1><p class="song-subtitle"><span id="song-zh">向夜晚奔去</span><span class="small-rule"></span><span id="song-roman">Yoru ni Kakeru</span></p><p id="song-note" class="hero-note"></p><div class="hero-actions"><a id="listen" class="button gold-button" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">▷</span> 前往官方 MV ↗</a><button id="favorite" class="button ghost-button" aria-pressed="false">＋ 加入收藏</button></div></div>
+          <div class="record-art" aria-hidden="true"><div class="orbit"></div><div class="record"><div class="record-label"><span>YOASOBI</span><b id="record-motif">夜</b><small>STORIES ON REPEAT</small></div></div><div class="sleeve"><span>THE<br>STORY<br>BEHIND.</span><i>小説を音楽に。</i><small>YORU NOTES / SELECTED ARCHIVE</small></div><span class="art-caption">WORDS BECOME SOUND — VOL. 01</span></div>
+        </div>
+        <div class="credits"><span>VOCAL <b>ikura</b></span><span>WORDS & MUSIC <b>Ayase</b></span><span>ORIGINAL STORY <b id="credit-author"></b></span></div>
+        <div class="reading-area">
+          <div class="reader-tabs" aria-label="閱讀內容"><button data-panel="story" aria-pressed="true">歌曲與故事 <span>STORY</span></button><button data-panel="lyrics" aria-pressed="false">歌詞對照 <span>LYRICS</span></button><span class="reading-label">聽見文字的另一面</span></div>
+          <section id="story-panel" aria-labelledby="story-heading"><div class="section-heading"><div><span class="eyebrow">BEFORE THE FIRST NOTE</span><h2 id="story-heading">每首歌，都有一個起點。</h2></div><span class="section-number" aria-hidden="true">01 /</span></div><div class="story-layout"><article class="story-copy"><span id="story-kind" class="tag">原作小說</span><h3 id="story-title" lang="ja"></h3><p id="story-author" class="byline"></p><p id="story-summary"></p><a id="story-source" class="source-link" target="_blank" rel="noopener noreferrer"></a></article><aside class="story-note"><span class="eyebrow">READ → LISTEN → FEEL</span><div class="book-symbol" aria-hidden="true">文<span>↗</span>音</div><p>先讀故事，再聽一次。</p><span id="story-tie"></span><small>介紹為本站整理，非歌詞翻譯。<br>中文曲名供辨識，可能與各地譯名不同。</small></aside></div></section>
+          <section id="lyrics-panel" aria-labelledby="lyrics-heading" hidden><div class="section-heading"><div><span class="eyebrow">READ IN YOUR OWN RHYTHM</span><h2 id="lyrics-heading">讓兩種語言，並肩閱讀。</h2></div></div><div class="lyrics-toolbar"><div class="language-picker" aria-label="歌詞顯示語言"><button data-language="both" aria-pressed="true">日中對照</button><button data-language="ja" aria-pressed="false">只看日文</button><button data-language="zh" aria-pressed="false">只看中文</button></div><button id="open-import" class="text-button">＋ 匯入歌詞</button></div><div id="lyrics-content"></div><div id="lyrics-controls" hidden><p id="lyrics-origin" class="muted"></p><button id="delete-lyrics" class="text-button">清除這首的匯入內容</button></div></section>
+        </div>
+      </section>
+      <section id="artist-page" hidden><div class="artist-hero"><p class="eyebrow gold">THE VOICE BEHIND THE STORIES</p><h1>ikura<span>幾田りら</span></h1><p>讓每個故事，擁有自己的聲音。</p><div class="artist-letter" aria-hidden="true">i.</div></div><div class="artist-body"><span class="eyebrow">ARTIST NOTES</span><h2>歌手，也是一位說故事的人。</h2><p>ikura 是 YOASOBI 的主唱，以「幾田りら」的名字從事創作歌手活動。2019 年與作曲家 Ayase 組成 YOASOBI，讓小說中的角色、情緒與視角透過音樂被聽見。</p><dl><div><dt>本名／個人活動名</dt><dd lang="ja">幾田りら（Ikuta Lilas）</dd></div><div><dt>出生日期</dt><dd>2000 年 9 月 25 日</dd></div><div><dt>出生地</dt><dd>日本東京都</dd></div><div><dt>YOASOBI 擔當</dt><dd>主唱・ikura</dd></div></dl><div class="artist-quote"><span>小説を音楽に。</span><p>YOASOBI 以「將小說化為音樂」為概念。Ayase 負責詞曲創作，ikura 以歌聲承接故事。</p></div><p class="source-links">資料來源：<a href="https://www.sme.co.jp/pressrelease/news/pdf/20240912.pdf" target="_blank" rel="noopener noreferrer">Sony Music 人物簡介 ↗</a> · <a href="https://www.mbs.jp/jounetsu/2021/12_12.shtml" target="_blank" rel="noopener noreferrer">MBS 人物介紹 ↗</a></p><a href="https://lilasikuta.jp/" class="button dark-button" target="_blank" rel="noopener noreferrer">幾田りら 官方網站 ↗</a></div></section>
+      <footer><span>YORU <i>Notes</i> <small>夜讀音樂室</small></span><p>非官方粉絲資料館 · 音樂與故事的權利屬原權利人<br>精選資料核對於 2026.09.23 · 不提供歌曲音訊或未授權歌詞</p><a href="https://www.yoasobi-music.jp/" target="_blank" rel="noopener noreferrer">YOASOBI OFFICIAL ↗</a></footer>
+    </main>
+  </div>
+  <dialog id="import-dialog" aria-labelledby="import-title"><form id="import-form"><div class="dialog-heading"><h2 id="import-title">匯入個人歌詞</h2><button type="button" id="close-import" aria-label="關閉匯入視窗">×</button></div><p>匯入至〈<span id="import-song"></span>〉。僅匯入你有權使用的歌詞與翻譯；內容只儲存在此瀏覽器，不會上傳。</p><label for="lyrics-file">選擇 JSON 檔案（200 KB 以內）</label><input id="lyrics-file" type="file" accept=".json,application/json"><label for="lyrics-input">或貼上逐行 JSON</label><textarea id="lyrics-input" rows="7" spellcheck="false" placeholder='[{"ja":"日文內容","zh":"正體中文內容"}]'></textarea><p class="muted">每行可只提供一種語言，最多 500 行。再次匯入將取代這首歌曲現有內容。</p><button type="button" id="load-example" class="text-button">填入原創示範文字（非歌曲歌詞）</button><p id="import-error" role="alert"></p><button type="submit" class="button dark-button">儲存並開始閱讀</button></form></dialog>
+  <div id="toast" role="status" class="toast" hidden></div>
+  <noscript><p>請啟用 JavaScript 以搜尋歌曲及閱讀內容。</p></noscript>
+</body>
+</html>
