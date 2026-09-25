@@ -79,3 +79,40 @@ test('接近上限的合法匯入標準化後仍可讀取儲存資料', () => {
  assert.throws(() => core.parseLyrics(JSON.stringify(rows)));
  assert.throws(() => core.validateLyricsRows([{kanji:12}]));
 });
+
+const bulkText = entries => JSON.stringify({version:1,songs:entries});
+test('整批匯入全部曲目與六欄，支援新增曲目而不寫死16', () => {
+ const catalog = [...songs, {id:'future',title:'未來曲目'}];
+ const row = {ja:'例文',zh:'範例',en:'Example',hiragana:'れいぶん',katakana:'レイブン',kanji:'例文'};
+ const result = core.parseBulkLyrics(bulkText(catalog.map(song => ({id:song.id,rows:[row]}))), catalog);
+ assert.equal(Object.keys(result.entries).length, 17);
+ assert.deepEqual(result.entries.future.rows, [row]);
+ assert.equal(result.entries.future.demo, false);
+ assert.equal(result.skipped, 0);
+});
+test('整批範本依曲目產生，空歌曲不覆寫，允許部分更新', () => {
+ const template = core.createLyricsTemplate(songs);
+ assert.deepEqual(template.songs.map(song => song.id), songs.map(song => song.id));
+ assert.equal(Object.keys(template.rowTemplate).length, 6);
+ assert.ok(template.songs.every(song => song.rows.length === 0 && song.title));
+ assert.throws(() => core.parseBulkLyrics(JSON.stringify(template), songs), /沒有可匯入/);
+ template.songs[0].rows = [{en:'Example'}];
+ const result = core.parseBulkLyrics(JSON.stringify(template), songs);
+ assert.deepEqual(Object.keys(result.entries), [songs[0].id]);
+ assert.equal(result.skipped, songs.length - 1);
+ assert.equal(core.parseBulkLyrics(bulkText([{id:songs[1].id,rows:[{kanji:'例'}]}]), songs).entries[songs[1].id].rows[0].kanji, '例');
+});
+test('整批拒絕未知ID、重複ID、無效版本與任何歌曲錯誤', () => {
+ const valid = {id:songs[0].id,rows:[{ja:'例文'}]};
+ for (const text of ['[]','null','{}','bad',JSON.stringify({version:2,songs:[valid]}),bulkText([]),bulkText([valid,valid]),bulkText([{id:'unknown',rows:[]}]),bulkText([{id:'__proto__',rows:[{ja:'例'}]}]),bulkText([null]),bulkText([{id:3,rows:[]}]),bulkText([valid,{id:songs[1].id,rows:[{en:12}]}]),bulkText([{id:songs[0].id,rows:null}])]) {
+  assert.throws(() => core.parseBulkLyrics(text, songs));
+ }
+ assert.throws(() => core.parseBulkLyrics(bulkText([{id:songs[1].id,rows:[{en:12}]}]), songs), new RegExp(songs[1].id));
+});
+test('整批容量依曲目成長，每曲仍有行數、欄位與200KB限制', () => {
+ assert.ok(core.bulkImportLimit([...songs,{id:'future'}]) > core.bulkImportLimit(songs));
+ assert.throws(() => core.parseBulkLyrics(' '.repeat(core.bulkImportLimit(songs) + 1), songs), /上限/);
+ for (const rows of [Array(501).fill({ja:'a'}),[{en:'a'.repeat(1001)}],Array(500).fill({ja:'a'.repeat(450)})]) {
+  assert.throws(() => core.parseBulkLyrics(bulkText([{id:songs[0].id,rows}]), songs));
+ }
+});

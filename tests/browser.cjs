@@ -191,6 +191,7 @@ const server = http.createServer((req, res) => {
     await legacyPage.locator('[data-panel=lyrics]').click();
     check('接近容量上限的匯入重新整理仍保留500行', await legacyPage.locator('.lyric-row').count() === 500 && await legacyPage.locator('.lyric-ja').first().textContent() === 'a'.repeat(350));
     await legacy.close();
+    await require('./bulk-browser.cjs')({browser,url,root,check});
     const local = await browser.newPage();
     await local.goto(pathToFileURL(path.join(root,'index.html')).href);
     check('直接 file:// 開啟可用', await local.locator('.song-item').count() === 16);

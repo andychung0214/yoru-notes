@@ -127,15 +127,46 @@
     document.title = `${active.title}｜YORU Notes 夜讀音樂室`;
     renderFavorite(); renderList(); showPanel(panel);
   }
-  function openImport() {
-    importTrigger = document.activeElement;
-    importTarget = active.id;
+  const singlePlaceholder = $('#lyrics-input').placeholder;
+  function updateImportPreview() {
+    const preview = $('#bulk-preview');
+    preview.textContent = '';
+    if ($('#import-mode').value !== 'bulk' || !$('#lyrics-input').value.trim()) return;
+    try {
+      const result = core.parseBulkLyrics($('#lyrics-input').value, songs);
+      const ids = Object.keys(result.entries);
+      const overwrite = ids.filter(id => library[id]).length;
+      preview.textContent = `待匯入 ${ids.length} 首，其中 ${overwrite} 首將取代已有內容；略過 ${result.skipped} 首空資料。目前曲目共 ${songs.length} 首。`;
+    } catch (error) { preview.textContent = error.message; }
+  }
+  function setImportMode(mode) {
     fileReadVersion++;
-    $('#import-song').textContent = active.title;
-    $('#lyrics-input').value = library[active.id] ? JSON.stringify(library[active.id].rows, null, 2) : '';
-    demoText = library[active.id]?.demo ? $('#lyrics-input').value : '';
+    const bulk = mode === 'bulk';
+    $('#import-mode').value = bulk ? 'bulk' : 'single';
+    $('#single-import-help').hidden = bulk;
+    $('#bulk-import-help').hidden = !bulk;
+    $('#bulk-preview').hidden = !bulk;
+    $('#load-example').hidden = bulk;
+    $('#lyrics-input').value = '';
+    $('#lyrics-input').placeholder = bulk ? '{"version":1,"songs":[{"id":"yoru","rows":[{"ja":"例文","zh":"範例"}]}]}' : singlePlaceholder;
     $('#lyrics-file').value = '';
     $('#import-error').textContent = '';
+    $('#lyrics-file-label').textContent = bulk ? `選擇整批 JSON（上限 ${(core.bulkImportLimit(songs) / 1000000).toFixed(3)} MB，每首 200 KB）` : '選擇 JSON 檔案（200 KB 以內）';
+    $('#download-lyrics-template').textContent = `下載全部 ${songs.length} 首 JSON 範本`;
+    $('#import-form button[type=submit]').disabled = false;
+    $('#import-form button[type=submit]').textContent = bulk ? '整批儲存歌詞' : '儲存並開始閱讀';
+    demoText = '';
+    updateImportPreview();
+  }
+  function openImport(mode = 'single') {
+    importTrigger = document.activeElement;
+    importTarget = active.id;
+    setImportMode(mode);
+    $('#import-song').textContent = active.title;
+    if ($('#import-mode').value === 'single') {
+      $('#lyrics-input').value = library[active.id] ? JSON.stringify(library[active.id].rows, null, 2) : '';
+      demoText = library[active.id]?.demo ? $('#lyrics-input').value : '';
+    }
     dialog.showModal();
   }
   function setTheme(theme, persist) {
@@ -170,6 +201,25 @@
   }));
   $$('button[data-theme]').forEach(button => button.addEventListener('click', () => setTheme(button.dataset.theme, true)));
   $('#open-import').addEventListener('click', openImport);
+  $('#open-bulk-import').addEventListener('click', () => openImport('bulk'));
+  $('#import-mode').addEventListener('change', event => setImportMode(event.target.value));
+  $('#lyrics-input').addEventListener('input', () => {
+    fileReadVersion++;
+    $('#import-form button[type=submit]').disabled = false;
+    $('#import-error').textContent = '';
+    demoText = '';
+    updateImportPreview();
+  });
+  $('#download-lyrics-template').addEventListener('click', () => {
+    const url = URL.createObjectURL(new Blob([JSON.stringify(core.createLyricsTemplate(songs), null, 2)], {type:'application/json;charset=utf-8'}));
+    const link = el('a');
+    link.href = url;
+    link.download = 'yoru-notes-all-songs.json';
+    document.body.append(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  });
   $('#close-import').addEventListener('click', () => dialog.close());
   dialog.addEventListener('close', () => {
     fileReadVersion++;
@@ -186,14 +236,19 @@
   $('#lyrics-file').addEventListener('change', async event => {
     const version = ++fileReadVersion;
     const file = event.target.files[0];
-    if (!file) return;
-    $('#import-error').textContent = '';
-    if (file.size > 200000) { $('#import-error').textContent = '檔案上限為 200 KB。'; return; }
     const submit = $('#import-form button[type=submit]');
+    submit.disabled = false;
+    $('#lyrics-input').value = '';
+    demoText = '';
+    $('#import-error').textContent = '';
+    updateImportPreview();
+    if (!file) return;
+    const limit = $('#import-mode').value === 'bulk' ? core.bulkImportLimit(songs) : 200000;
+    if (file.size > limit) { $('#import-error').textContent = `檔案超過上限（${limit.toLocaleString()} bytes）。請分批匯入。`; return; }
     submit.disabled = true;
     try {
       const value = await file.text();
-      if (version === fileReadVersion && dialog.open) { $('#lyrics-input').value = value; demoText = ''; }
+      if (version === fileReadVersion && dialog.open) { $('#lyrics-input').value = value; updateImportPreview(); }
     } catch { if (version === fileReadVersion) $('#import-error').textContent = '無法讀取檔案，請重新選擇或貼上內容。'; }
     finally { if (version === fileReadVersion) submit.disabled = false; }
   });
@@ -201,6 +256,16 @@
     event.preventDefault();
     try {
       const text = $('#lyrics-input').value;
+      if ($('#import-mode').value === 'bulk') {
+        const result = core.parseBulkLyrics(text, songs);
+        const nextLibrary = {...library, ...result.entries};
+        if (!core.saveJSON(storage, 'yoru.lyrics', nextLibrary)) throw Error('瀏覽器無法儲存整批內容，可能是容量不足或儲存權限遭拒。此次未變更任何歌曲，請縮小檔案或分批匯入。');
+        library = nextLibrary;
+        dialog.close();
+        renderLyrics();
+        notify(`已整批儲存 ${Object.keys(result.entries).length} 首歌曲；其餘歌曲保持原內容。`);
+        return;
+      }
       library[importTarget] = {rows:core.parseLyrics(text),demo:!!demoText && text === demoText};
       const persisted = save('yoru.lyrics', library);
       dialog.close();
